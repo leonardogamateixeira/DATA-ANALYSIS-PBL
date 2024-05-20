@@ -2,23 +2,26 @@ import csv
 
 InvalidOp = True
 while InvalidOp == True:
-    menuOp = input('''1- Sobre a dengue
-2- Analise dos dados
+    menuOp = input('''\n1- Informações do sistema
+2- Alterar dados
 3- Sair
 
 Selecione uma opção: ''')
 
     match menuOp:
         case "1":
-            print("\nDengue q sei oq n sei oq la")
-            InvalidOp = False
+            with open('denguedata.csv', newline='') as csvfile:
+                reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+                for row in reader:
+                    print(' '.join(row))
         case "2":
-            print("\n(arquivo .csv, alterar adicionar e tals)")
-            InvalidOp = False
+            escrever = input("Escreva: ")
+            with open('some.csv', 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerows(escrever)
         case "3":
             print("\nFinalizando programa")
             exit()
         case _:
             print("\nSelecione uma opção válida!\n")
 
-print("\nfim")

@@ -8,27 +8,38 @@
 # do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
 
 import csv
+from tabulate import tabulate
+from datetime import datetime
+import usagedef
 
 InvalidOp = True
 while InvalidOp == True:
-    menuOp = input('''\n1- Buscar informações do sistema
-2- Ler arquivo
-3- Adcionar informações ao arquivo
-4- Sair
+    menuOp = input('''\n  
+        ----------Menu Inicial----------
+                    
+        1- Buscar informações do sistema
+        2- Ler arquivo
+        3- Adcionar informações
+        4- Comparar dados
+        5- Sair
 
 Selecione uma opção: ''')
 
     match menuOp:
         case "1":
-            print("oi")
+            print("Buscar informações do sistema")
         case "2":
             with open('denguedata.csv', newline='') as csvfile:
-                reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-                for row in reader:
-                    print(' '.join(row))
+                reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+                print(tabulate(reader, headers='firstrow', tablefmt='rounded_grid'))
         case "3":
-            print("Escreva")
+            with open('denguedata.csv','a', newline='') as csvfile:
+                write = csv.writer(csvfile, delimiter=',')
+                write.writerow()
+            
         case "4":
+            print("Comparar dados")  
+        case "5":
             print("\nFinalizando programa")
             exit()
         case _:

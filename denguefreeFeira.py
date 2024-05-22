@@ -12,8 +12,7 @@ from tabulate import tabulate
 from datetime import datetime
 import usagedef
 
-InvalidOp = True
-while InvalidOp == True:
+while True:
     menuOp = input('''\n  
         ----------Menu Inicial----------
                     
@@ -23,20 +22,31 @@ while InvalidOp == True:
         4- Comparar dados
         5- Sair
 
-Selecione uma opção: ''')
-
+        Selecione uma opção: ''')
+    
     match menuOp:
         case "1":
             print("Buscar informações do sistema")
         case "2":
             with open('denguedata.csv', newline='') as csvfile:
-                reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+                reader = csv.reader(csvfile, delimiter=',', quotechar='|')  
                 print(tabulate(reader, headers='firstrow', tablefmt='rounded_grid'))
         case "3":
-            with open('denguedata.csv','a', newline='') as csvfile:
-                write = csv.writer(csvfile, delimiter=',')
-                write.writerow()
+            InvalidOp = True
+            while InvalidOp == True:
+                try:
+                    bairro = input("bairro: ")  
+                    positivos = int(input(f"positivos em {bairro}: ")) 
+                    negativos = int(input(f"negativos em {bairro}: "))
+                    confirmados = int(input(f"confirmados em {bairro}: "))
+                    InvalidOp = False
+                except:
+                        print("Preencha os dados corretamente!")
             
+            with open('denguedata.csv','a', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow()
+
         case "4":
             print("Comparar dados")  
         case "5":

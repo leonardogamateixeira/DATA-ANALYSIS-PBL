@@ -12,13 +12,14 @@ from tabulate import tabulate
 from datetime import datetime
 import usagedef
 
+# Abre o arquivo e armazena em variaveis duas funções, uma para ler o arquivo e outra adicionar para adicionar uma linha ao final dele
 try:
     csvfileW = open('denguedata.csv', 'a', newline='')
     csvfileR = open('denguedata.csv', 'r')
     reader = csv.reader(csvfileR, delimiter=',')
 except:
     print(IOError)
-
+# Cria uma matriz baseada no arquivo aberto, uma lista todos os bairros cadastrados
 Lista = [row for row in reader]
 bairros = set([row[1] for row in Lista])
 try:
@@ -91,6 +92,13 @@ while menuOp != "5":
                     InvalidLocale = False
                 else:
                     print(f"\nNão é possivel registrar o bairro {bairro} pois não consta no sistema.\n")
+                    Newbairro = input("Deseja adcionar um novo bairro ao sistema?\n1-Sim\n2-Não")
+                    if Newbairro == "1":
+                        bairro = input("Qual novo bairro que serão adcionadas as informações: ")
+                    elif Newbairro == "2":
+                        InvalidLocale = True
+                    else:
+                        print("Digite uma opção válida!")
             InvalidNum = True
             while InvalidNum:
                 suspeitos = input(f"Quantidade de casos suspeitos em {bairro}: ")

@@ -12,45 +12,88 @@ from tabulate import tabulate
 from datetime import datetime
 import usagedef
 
-while True:
-    menuOp = input('''\n  
-        ----------Menu Inicial----------
-                    
-        1- Buscar informações do sistema
-        2- Ler arquivo
-        3- Adcionar informações
-        4- Comparar dados
-        5- Sair
+try:
+    csvfileW = open('denguedata.csv', 'a', newline='')
+    csvfileR = open('denguedata.csv', 'r')
+    reader = csv.reader(csvfileR, delimiter=',')
+except:
+    print(IOError)
 
-        Selecione uma opção: ''')
+Lista = [row for row in reader]
+bairros = set([row[1] for row in Lista])
+datas = set([row[0] for row in Lista])
+csvfileR.close()
+
+menuOp = ''
+while menuOp != "5":
+    menuOp = input("\n  ----------Menu Inicial----------\n1- Buscar informações do sistema\n2- Ler arquivo\n3- Adcionar informações\n4- Comparar dados\n5- Sair\nSelecione uma opção: ")
     
     match menuOp:
         case "1":
-            print("Buscar informações do sistema")
-        case "2":
-            with open('denguedata.csv', newline='') as csvfile:
-                reader = csv.reader(csvfile, delimiter=',', quotechar='|')  
-                print(tabulate(reader, headers='firstrow', tablefmt='rounded_grid'))
+            InvalidFilt = True
+            while InvalidFilt == True:
+                filtro = input("\n1- Data\n2- Bairro\nPor qual parâmetro deseja buscar as informações?: ")
+                match filtro:
+                    case "1":
+                        InvalidPam = True
+                        while InvalidPam:
+                            filtro = input("Digite a data desejada(dd/mm/YYYY): ")
+                            validation = usagedef.ValiDate(filtro, datas)
+                            if validation == True:
+                                rowFilt = 0
+                                InvalidPam = False
+                            else:
+                                print(f"Não há registros para essa data.")
+                    case "2":
+                        InvalidPam = True
+                        while InvalidPam:
+                            filtro = input("Digite o bairro desejado: ")
+                            validation = usagedef.ValiBairro(bairros, filtro)
+                            if validation == True:
+                                rowFilt = 1
+                                InvalidPam = False
+                            else:
+                                print(f"Não há registros para o bairro {filtro}")
+                    case _:
+                        print("Digite uma opção valida!")
+
+                TableFilt = [row for row in Lista if row[rowFilt] == filtro]
+                print(tabulate(TableFilt, headers='firstrow', tablefmt='rounded_grid')) 
+                InvalidFilt = False     
+                        
+        case "2": 
+            print(tabulate(Lista, headers='firstrow', tablefmt='rounded_grid'))        
         case "3":
-            InvalidOp = True
-            while InvalidOp == True:
-                try:
-                    bairro = input("bairro: ")  
-                    positivos = int(input(f"positivos em {bairro}: ")) 
-                    negativos = int(input(f"negativos em {bairro}: "))
-                    confirmados = int(input(f"confirmados em {bairro}: "))
-                    InvalidOp = False
-                except:
-                        print("Preencha os dados corretamente!")
-            
-            with open('denguedata.csv','a', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow()
+            InvalidLocale = True
+            while InvalidLocale:
+                bairro = input("bairro: ")
+                validation = usagedef.ValiBairro(bairros, bairro)
+                if validation:
+                    InvalidLocale = False
+                else:
+                    print(f"Não é possivel registrar o bairro {bairro} pois não consta no sistema.")
+            InvalidNum = True
+            while InvalidNum:
+                suspeitos = input(f"suspeitos em {bairro}: ")
+                negativos = input(f"negativos em {bairro}: ")
+                confirmados = input(f"confirmados em {bairro}: ")
+                validation = usagedef.ValiNum(suspeitos, negativos, confirmados)
+                if validation:
+                    InvalidNum = False
+                else:
+                    print("Digite valores válidos!")
+            LastDate = Lista[-1][0]
+            NewDate = usagedef.DayAdd(LastDate)
+            habitantes = [row[2] for row in Lista if row[1] == bairro].pop()
+            write = csv.writer(csvfileW, delimiter=',')
+            write.writerow([NewDate, bairro, habitantes, suspeitos, negativos, confirmados])
+            Lista.append([NewDate, bairro, habitantes, suspeitos, negativos, confirmados])
 
         case "4":
             print("Comparar dados")  
         case "5":
             print("\nFinalizando programa")
-            exit()
         case _:
             print("\nSelecione uma opção válida!\n")
+
+csvfileW.close()

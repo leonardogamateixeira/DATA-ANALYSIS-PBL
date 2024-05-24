@@ -21,13 +21,15 @@ except:
 
 Lista = [row for row in reader]
 bairros = set([row[1] for row in Lista])
-datas = set([row[0] for row in Lista])
-csvfileR.close()
+try:
+    csvfileR.close()
+except:
+    print(IOError)
 
 menuOp = ''
 while menuOp != "5":
     menuOp = input("\n  ----------Menu Inicial----------\n1- Buscar informações do sistema\n2- Ler arquivo\n3- Adcionar informações\n4- Comparar dados\n5- Sair\nSelecione uma opção: ")
-    
+
     match menuOp:
         case "1":
             InvalidFilt = True
@@ -38,6 +40,7 @@ while menuOp != "5":
                         InvalidPam = True
                         while InvalidPam:
                             filtro = input("Digite a data desejada(dd/mm/YYYY): ")
+                            datas = set([row[0] for row in Lista])
                             validation = usagedef.ValiDate(filtro, datas)
                             if validation == True:
                                 rowFilt = 0
@@ -64,27 +67,44 @@ while menuOp != "5":
         case "2": 
             print(tabulate(Lista, headers='firstrow', tablefmt='rounded_grid'))        
         case "3":
+            LastDate = Lista[-1][0]
+            InvalidOp = True
+            while InvalidOp:
+                NumOp = input("Deseja adcionar as informações no dia atual ou no próximo?\n1-Dia Atual\n2-Ir para o proximo dia\n")
+                match NumOp:
+                    case "1":
+                        NewDate = LastDate
+                        InvalidOp = False
+                    case "2":
+                        NewDate = usagedef.DayAdd(LastDate)
+                        InvalidOp = False
+                    case _:
+                        print("\n Digite uma opção valida!")
+
+
             InvalidLocale = True
             while InvalidLocale:
-                bairro = input("bairro: ")
+                bairro = input("Qual bairro serão adcionadas as informações: ")
                 validation = usagedef.ValiBairro(bairros, bairro)
                 if validation:
+                    habitantes = [row[2] for row in Lista if row[1] == bairro].pop()
                     InvalidLocale = False
                 else:
-                    print(f"Não é possivel registrar o bairro {bairro} pois não consta no sistema.")
+                    print(f"\nNão é possivel registrar o bairro {bairro} pois não consta no sistema.\n")
             InvalidNum = True
             while InvalidNum:
-                suspeitos = input(f"suspeitos em {bairro}: ")
-                negativos = input(f"negativos em {bairro}: ")
-                confirmados = input(f"confirmados em {bairro}: ")
+                suspeitos = input(f"Quantidade de casos suspeitos em {bairro}: ")
+                negativos = input(f"Quantidade de casos negativos em {bairro}: ")
+                confirmados = input(f"Quantidade de casos confirmados em {bairro}: ")
                 validation = usagedef.ValiNum(suspeitos, negativos, confirmados)
                 if validation:
-                    InvalidNum = False
+                    if (int(suspeitos) + int(negativos) + int(confirmados)) < int(habitantes):
+                        InvalidNum = False
+                    else:
+                        print("O número de casos precisa ser menor que o número de habitantes!")
                 else:
                     print("Digite valores válidos!")
-            LastDate = Lista[-1][0]
-            NewDate = usagedef.DayAdd(LastDate)
-            habitantes = [row[2] for row in Lista if row[1] == bairro].pop()
+
             write = csv.writer(csvfileW, delimiter=',')
             write.writerow([NewDate, bairro, habitantes, suspeitos, negativos, confirmados])
             Lista.append([NewDate, bairro, habitantes, suspeitos, negativos, confirmados])
@@ -96,4 +116,7 @@ while menuOp != "5":
         case _:
             print("\nSelecione uma opção válida!\n")
 
-csvfileW.close()
+try:
+    csvfileW.close()
+except:
+    print(IOError)

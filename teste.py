@@ -1,46 +1,11 @@
-import csv
-from datetime import datetime
-import usagedef
-import tabulate
+casos =[['23/04', 'Tomba', '2', '2'],
+        ['23/04', 'Papagaio', '2', '2'],
+        ['23/04', 'Cis', '2', '2'],
+        ['24/04', 'Tomba', '1', '1'],
+        ['24/04', 'Papagaio', '1', '1'],
+        ['24/04', 'Cis', '1', '1']]
 
-try:
-    csvfileW = open('denguedata.csv', 'a')
-    csvfileR = open('denguedata.csv', 'r')
-    reader = csv.reader(csvfileR, delimiter=',')
-except:
-    print(IOError)
-
-Lista = [row for row in reader]
-csvfileR.close()
-
-InvalidFilt = True
-while InvalidFilt == True:
-    filtro = input("\n1- Data\n2- Bairro\nPor qual parâmetro deseja buscar as informações?: ")
-    match filtro:
-        case "1":
-            filtro = False
-            while filtro == False:
-                filtro = input("Digite a data desejada(dd/mm/YYYY): ")
-                validation = usagedef.ValiDate(filtro)
-                if validation == True:
-                    rowFilt = 0
-                    InvalidFilt = False
-                else:
-                    print(f"Não há registros para essa data.")
-                    filtro = False
-        case "2":
-            filtro = False
-            while filtro == False:
-                bairros = set([row[1] for row in Lista])
-                filtro = input("Digite o bairro desejado: ")
-                if filtro in bairros:
-                    rowFilt = 1
-                    InvalidFilt = False
-                else:
-                    print(f"Não há registros para o bairro {filtro}")
-                    filtro = False
-        case _:
-            print("Digite uma opção valida!")
-
-TableFilt = [row for row in Lista if row[rowFilt] == filtro]
-print(tabulate.tabulate(TableFilt, headers='firstrow', tablefmt='rounded_grid'))       
+confSoma1 = sum([int(row[2]) for row in casos if row[0] == data1])
+confSoma2 = sum([int(row[2]) for row in casos if row[0] == data2])
+negSoma1 = sum([int(row[3]) for row in casos if row[0] == data1])
+negSoma2 = sum([int(row[3]) for row in casos if row[0] == data2])

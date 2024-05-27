@@ -7,7 +7,7 @@ def ValiDate(data, datas):
     else:
         return False
 # função para validar as os bairros checando se o bairro esta registrado na lista unica (bairros)
-def ValiBairro(bairros, bairro):
+def ValiBairro(bairro, bairros):
     if bairro in bairros:
         return True
     else:

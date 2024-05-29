@@ -16,10 +16,12 @@ try:
     csvfileW = open('denguedata.csv', 'a', newline='')
     csvfileR = open('denguedata.csv', 'r')
     reader = csv.reader(csvfileR, delimiter=',')
-except:
-    print(IOError)
+except FileNotFoundError:
+    print("N existe, pergunta se quer criar um arquivo, cria e checa se ele tem ")
+    
 
 # Cria uma matriz baseada no arquivo aberto
+# ADCIONAR VERIFICAÇÃO DE ARQUIVO<-isso com ctz //// talvez isso->CASO N TENHA FZR UM NOVO!
 Lista = [row for row in reader]
 datas = set([row[0] for row in Lista])
 
@@ -128,7 +130,7 @@ while menuOp != "5":
                 validation = usagedef.ValiNum(suspeitos, negativos, confirmados)
                 if validation:
                     suspeitos, negativos, confirmados = list(map(int, [suspeitos, negativos, confirmados]))
-                    # após isso checa se a soma dos casos não é maior que a quantidade de 
+                    # após a checagem checa se a soma dos casos não é maior que a quantidade de 
                     # habitantes do bairro e se a quantidade de casos negativos e confirmados não
                     # é maior que a quantidade de suspeitos anterior, caso não seja adiciona os casos a conta
                     if (suspeitos + negativos + confirmados) < int(habitantes):

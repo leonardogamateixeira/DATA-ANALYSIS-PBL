@@ -19,7 +19,6 @@ try:
 except FileNotFoundError:
     print("N existe, pergunta se quer criar um arquivo, cria e checa se ele tem ")
     
-
 # Cria uma matriz baseada no arquivo aberto
 # ADCIONAR VERIFICAÇÃO DE ARQUIVO<-isso com ctz //// talvez isso->CASO N TENHA FZR UM NOVO!
 Lista = [row for row in reader]

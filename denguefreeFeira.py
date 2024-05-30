@@ -78,6 +78,7 @@ while menuOp != "4":
                                         nome = "Datas"
                                         rowFilt = 0
                                         InvalidPam = False
+                                        RecentCases = Lista
                                     else:
                                         print(f"Não há registros para essa data.\n")
 
@@ -188,7 +189,13 @@ while menuOp != "4":
                     BairroOp = input("Deseja adcionar um bairro ao sistema?\n1- Sim\n2- Não")
                     if BairroOp == "1":
                         bairro = input("Digite o nome do novo bairro: ")
-                        InvalidLocale = False
+                        habitantes = input("Digite a quantidade de habitantes no bairro: ")
+                        if habitantes.isnumeric():
+                            InvalidLocale = False
+                        else:
+                            print("Digite um valor numerico!")
+
+                        
                     elif BairroOp == "2":
                         print("Ao inserir novos dados, certifique-se de que o bairro consta no sistema")
                     else:
@@ -200,29 +207,32 @@ while menuOp != "4":
                 suspeitos = input(f"Quantidade de novos casos suspeitos em {bairro}: ")
                 negativos = input(f"Quantidade de novos casos negativos em {bairro}: ")
                 confirmados = input(f"Quantidade de novos casos confirmados em {bairro}: ")
-                validation = usagedef.ValiNum(suspeitos, negativos, confirmados)
-                if validation:
+
+                if suspeitos.isnumeric() and negativos.isnumeric() and confirmados.isnumeric():
                     suspeitos, negativos, confirmados = list(map(int, [suspeitos, negativos, confirmados]))
                     # após a checagem checa se a soma dos casos não é maior que a quantidade de 
                     # habitantes do bairro e se a quantidade de casos negativos e confirmados não
                     # é maior que a quantidade de suspeitos anterior, caso não seja adiciona os casos a conta
-                    if (suspeitos + negativos + confirmados) < int(habitantes):
-
-                        LastSuspeitos = int([row[3] for row in Lista if row[1] == bairro].pop())
-                        if negativos + confirmados < LastSuspeitos:
-
-                            NewSuspeitos = (LastSuspeitos + suspeitos) - (negativos + confirmados)
+                    if (suspeitos + negativos + confirmados) <= int(habitantes):
+                        if bairro in bairros:
+                            LastSuspeitos = int([row[3] for row in Lista if row[1] == bairro].pop())
                             NewNegativos = int([row[4] for row in Lista if row[1] == bairro].pop()) + negativos
+                            NewSuspeitos = (LastSuspeitos + suspeitos) - (negativos + confirmados)
                             NewConfirmados = int([row[5] for row in Lista if row[1] == bairro].pop()) + confirmados
+                        else:
+                            LastSuspeitos = NewSuspeitos = suspeitos
+                            NewNegativos = negativos
+                            NewConfirmados = confirmados
+                            
+                        if negativos + confirmados < LastSuspeitos:
                             InvalidNum = False
                         else:  
                             print("A soma dos casos positivos e negativos precisa ser menor que o número de casos suspeitos!")                 
                     else:
-                        print("O número de casos precisa ser menor que o número de habitantes!")
+                        print("O número de casos precisa ser menor que o número de habitantes!")                      
                 else:
-                    print("Digite valores válidos!")
-
-            # Adiciona as informações ao arquivo csv e a lista gerada no inicio do código
+                    print("Digite valores válidos!")        
+                # Adiciona as informações ao arquivo csv e a lista gerada no inicio do código
             write = csv.writer(csvfileW, delimiter=',')
             write.writerow([NewDate, bairro, habitantes, NewSuspeitos, NewNegativos, NewConfirmados])
             Lista.append([NewDate, bairro, habitantes, NewSuspeitos, NewNegativos, NewConfirmados])

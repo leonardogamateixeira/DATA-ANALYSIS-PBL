@@ -6,12 +6,6 @@ def Validate(entrada, lista):
         return True
     else:
         return False
-# função para validar as entradas de casos checando se são numeros
-def ValiNum(suspeitos, negativos, confirmados):
-    if suspeitos.isnumeric() and negativos.isnumeric() and confirmados.isnumeric() == True:
-        return True
-    else:
-        return False
 # função para aumentar um dia caso o usuario selecione a opção de adcionar dia
 def DayAdd(LastDate):
     date = datetime.strptime(LastDate, "%d/%m/%Y")

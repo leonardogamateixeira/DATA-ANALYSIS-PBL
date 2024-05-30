@@ -142,7 +142,7 @@ while menuOp != "4":
         case "2":
             InvalidOp = True
             while InvalidOp:
-                TableOp = input("1- Ver tabela com todos os dados\n2- Percentual de todos os casos\n3- Percentual de casos por bairro")
+                TableOp = input("1- Ver tabela com todos os dados\n2- Percentual de casos por bairro")
                 match TableOp:
 
                     case "1":
@@ -152,10 +152,6 @@ while menuOp != "4":
                     case "2":
                         InvalidOp = False
                         print("Percentual de todos os casos")
-
-                    case "3":
-                        InvalidOp = False
-                        print("Percentual de casos por bairro")
 
                     case _:
                         print("Digite um valor valido")

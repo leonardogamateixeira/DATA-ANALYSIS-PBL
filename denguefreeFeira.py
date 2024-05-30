@@ -1,6 +1,6 @@
 # Autor: Leonardo Gama Teixeira
 # Componente Curricular: 2024.1 EXA854 - MI - ALGORITMOS (TP03) 
-# Concluido em: 15/04/2024
+# Concluido em: 01/05/2024
 # Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
 # trecho de código de outro colega ou de outro autor, tais como provindos de livros e
 # apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
@@ -15,25 +15,35 @@ try:
     csvfileW = open('denguedata.csv', 'a', newline='')
     csvfileR = open('denguedata.csv', 'r')
     reader = csv.reader(csvfileR, delimiter=',')
-except FileNotFoundError:
-    print("N existe, pergunta se quer criar um arquivo, cria e checa se ele tem ")
-    
-# Cria uma matriz baseada no arquivo aberto
-# ADCIONAR VERIFICAÇÃO DE ARQUIVO<-isso com ctz //// talvez isso->CASO N TENHA FZR UM NOVO!
+except FileExistsError | FileNotFoundError:
+    print("arquivo não encontrado, crie um novo na opção 3(Adcionar informações)")
+
+menuOp = ''  
+
+InvalidLine = [row for row in reader if len(row) != 6]
+Lista = [['Data','Bairros','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados'],[ '22/03/2024','Tomba',55007,100,20,500]]
+if InvalidLine:
+    print("Arquivo não corresponde aos parametros previstos, separe os itens em 6 colunas separados por virgula\n")
+    print('Tabela exemplar')
+    print(tabulate(Lista, tablefmt='rounded_grid'))
+    menuOp = "4"
+
 Lista = [row for row in reader]
 datas = set([row[0] for row in Lista])
 bairros = set([row[1] for row in Lista])
+csvfileR.close()
 
-try:
-    csvfileR.close()
-except:
-    print(IOError)
-
-menuOp = ''
 while menuOp != "4":
     menuOp = input("\n  ----------Menu Inicial----------\n1- Buscar informações do sistema\n2- Ler arquivo\n3- Adcionar informações\n4- Sair\nSelecione uma opção: ")
     # Cria uma lista com informações unicas baseado em todos os bairros cadastrados
 
+    bairroCasos = set()
+    RecentCases = []
+    for row in reversed(Lista):
+        if row[1] in bairroCasos:
+            continue
+        RecentCases.append(row)
+        bairroCasos.add(row[1])
 
     match menuOp:
         case "1":
@@ -41,15 +51,7 @@ while menuOp != "4":
                 BuscaOp = input("Como deseja fazer essa pesquisa?\n1- Comparando dois parâmetros\n2- Observando um pârametro expecifico")
                 match BuscaOp:
                     case "1":
-                        
-                        bairroCasos = set()
-                        RecentCases = []
-                        for row in reversed(Lista):
-                            if row[1] in bairroCasos:
-                                continue
-                            RecentCases.append(row)
-                            bairroCasos.add(row[1])
-                            
+                             
                         invalidComp = True
                         while invalidComp:
                             CompareOp = input("Qual parametro de comparação deseja usar?\n1- Bairro\n2- Data")
@@ -99,7 +101,7 @@ while menuOp != "4":
                            [filtro, NegSoma1, confSoma1],
                            [filtro2, NegSoma2, confSoma2],
                            ["Direfença", difNeg, difConf],
-                           ["Diferença Percentual", f"{round((difNeg/(NegSoma1+NegSoma2)*100), 0)}%", f"{round((difConf/(confSoma1+confSoma2)*100), 0)}%"]]                               
+                           ["Diferença Percentual", f"{round((difNeg/(NegSoma1+NegSoma2)*100))}%", f"{round((difConf/(confSoma1+confSoma2)*100))}%"]]                               
                         print(tabulate(Compare, headers='firstrow', tablefmt='rounded_grid'))
                         menuOp = 0        
                     case "2":
@@ -117,6 +119,7 @@ while menuOp != "4":
                                             rowFilt = 0
                                             InvalidPam = False
                                             InvalidFilt = False
+                                            RecentCases = Lista
                                         else:
                                             print(f"Não há registros para essa data.")
 
@@ -134,27 +137,31 @@ while menuOp != "4":
 
                                 case _:
                                     print("Digite uma opção valida!")
-
+                        
                             TableFilt = [row for row in Lista if row[rowFilt] == filtro]    
-                            print(tabulate(TableFilt, headers=['Data','Bairro','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados'], tablefmt='rounded_grid')) 
-                            menuOp = 0                                   
+                            print(tabulate(TableFilt, headers=['Data','Bairro','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados'], tablefmt='rounded_grid'))
+                            menuOp = 0                             
                         
         case "2":
-            InvalidOp = True
-            while InvalidOp:
-                TableOp = input("1- Ver tabela com todos os dados\n2- Percentual de casos por bairro")
-                match TableOp:
-
-                    case "1":
-                        InvalidOp = False
-                        print(tabulate(Lista, headers='firstrow', tablefmt='rounded_grid'))
-
-                    case "2":
-                        InvalidOp = False
-                        print("Percentual de todos os casos")
-
-                    case _:
-                        print("Digite um valor valido")
+            while menuOp == "2":
+                PrintOp = input("Quais dados deseja acessar?\n1- Tabela completa\n2- Porcentagem de casos por bairro")
+                if PrintOp == "1":    
+                    RecentSus = sum([int(row[3]) for row in RecentCases[:-2]])
+                    RecentNeg = sum([int(row[4]) for row in RecentCases[:-2]])
+                    RecentConf = sum([int(row[5]) for row in RecentCases[:-2]])
+                    ListaTotal = [['Total de casos notificados', 'Percentual de Suspeitos','Percentual de confirmados', 'Percentual de negativados'],[RecentConf+RecentNeg+RecentSus,f"{round((RecentSus/(RecentConf+RecentNeg+RecentSus)*100))}%",f"{round((RecentNeg/(RecentConf+RecentNeg+RecentSus)*100))}%",f"{round((RecentConf/(RecentConf+RecentNeg+RecentSus)*100))}%"]]
+                    print(tabulate(Lista, headers='firstrow', tablefmt='rounded_grid'))
+                    print(tabulate(ListaTotal, headers='firstrow', tablefmt='rounded_grid'))
+                    menuOp = 0
+                elif PrintOp == "2":
+                    TablePorcent = []
+                    for row in Lista[1:]:
+                        pou = [row[1],f"{round(((int(row[3])/int(row[2]))*100), 1)}%",f"{round(((int(row[3])/int(row[2]))*100), 1)}%",f"{round(((int(row[5])/int(row[2]))*100), 1)}%"]
+                        TablePorcent.append(pou)
+                    print(tabulate(TablePorcent, headers=['Bairro','Percentual de suspeitos','Percentual de negativados','Percentual de confirmados' ], tablefmt='rounded_grid')) 
+                    menuOp = 0  
+                else:
+                    print("Digite um valor valido")
 
         case "3":
             # Pega a ultima data da lista e armazena em LastDate
@@ -239,8 +246,6 @@ while menuOp != "4":
         case _:
             print("\nSelecione uma opção válida!\n")
 
-try:
-    # fecha o arquivo após encerrar o programa, para assim atualizar o csv com os novos dados
-    csvfileW.close()
-except:
-    print(IOError)
+
+# fecha o arquivo após encerrar o programa, para assim atualizar o csv com os novos dados
+csvfileW.close()

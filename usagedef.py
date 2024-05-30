@@ -1,14 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
-# função para validar as datas checando se existe uma data registrada com esse valor na lista unica (datas)
-def ValiDate(data, datas):
-    if data in datas:
-        return True
-    else:
-        return False
-# função para validar as os bairros checando se o bairro esta registrado na lista unica (bairros)
-def ValiBairro(bairro, bairros):
-    if bairro in bairros:
+# função para validar as a entrada checando se existe esse valor na lista
+def Validate(entrada, lista):
+    if entrada in lista:
         return True
     else:
         return False

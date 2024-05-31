@@ -12,11 +12,11 @@ from tabulate import tabulate
 import usagedef
 # Abre o arquivo e armazena em variaveis duas funções, uma para ler o arquivo e outra adicionar para adicionar uma linha ao final dele
 try:
-    csvfileW = open('denguedata.csv', 'a', newline='')
-    csvfileR = open('denguedata.csv', 'r')
+    csvfileW = open('denguefreeFeira.csv', 'a', newline='')
+    csvfileR = open('denguefreeFeira.csv', 'r')
     reader = csv.reader(csvfileR, delimiter=',')
 except FileExistsError | FileNotFoundError:
-    print("arquivo não encontrado, crie um novo na opção 3(Adcionar informações)")
+    print("Arquivo não encontrado")
 
 menuOp = ''  
 
@@ -32,6 +32,10 @@ Lista = [row for row in reader]
 datas = set([row[0] for row in Lista])
 bairros = set([row[1] for row in Lista])
 csvfileR.close()
+
+if Lista == []:
+     print("\narquivo vazio, crie um novo arquivo na opção 3(Adcionar informações)")
+     Lista = ['Data','Bairros','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados']
 
 while menuOp != "4":
     menuOp = input("\n  ----------Menu Inicial----------\n1- Buscar informações do sistema\n2- Ler arquivo\n3- Adcionar informações\n4- Sair\nSelecione uma opção: ")
@@ -245,7 +249,6 @@ while menuOp != "4":
             print("\nFinalizando programa")
         case _:
             print("\nSelecione uma opção válida!\n")
-
 
 # fecha o arquivo após encerrar o programa, para assim atualizar o csv com os novos dados
 csvfileW.close()

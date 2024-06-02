@@ -21,7 +21,7 @@ except FileExistsError | FileNotFoundError:
 
 write = csv.writer(csvfileW, delimiter=',')
 menuOp = ''  
-# Checa se o arquivo tem os parametros previstos pelo programa caso n tenha, orienta o usuario e encerra o programa
+# Checa se o arquivo tem os parametros previstos pelo programa caso não tenha, orienta o usuario e encerra o programa
 InvalidLine = [row for row in reader if len(row) != 6]
 TabelaEx = [['Data','Bairros','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados'],[ '22/03/2024','Tomba',55007,100,20,500]]
 if InvalidLine:
@@ -29,11 +29,11 @@ if InvalidLine:
     print('Tabela exemplar')
     print(tabulate(TabelaEx, tablefmt='rounded_grid'))
     menuOp = "4"
-# Cria matrizes baseadas no arquivo e na matriz da lista principal
+# Cria matrizes baseadas na matriz da lista principal
 datas = set([row[0] for row in Lista])
 bairros = set([row[1] for row in Lista])
 csvfileR.close()
-# Caso a lista esteja vazia adiciona um cabeçario para não dar erro se o usuario tentar criar uma row
+# Caso a lista esteja vazia adiciona um cabeçario para não dar erro se o usuario tentar criar uma linha nova
 if Lista == []:
     print("\narquivo vazio, crie um novo arquivo na opção 3(Adcionar informações)")
     write.writerow(['Data','Bairros','Habitantes','Casos Suspeitos','Casos Negativos','Casos Confirmados'])
@@ -92,7 +92,7 @@ while menuOp != "4":
                             else:
                                 print("Digite uma opção valida!")
 
-                        # Pega todos os casos do sistema, soma e armazena nas variaveis para fazer a impressão dos dados
+                        # Pega os casos mais recentes do sistema, soma e armazena nas variaveis para fazer a impressão dos dados
                             
                         confSoma1 = sum([int(row[5]) for row in RecentCases if row[rowFilt] == filtro])
                         confSoma2 = sum([int(row[5]) for row in RecentCases if row[rowFilt] == filtro2])
@@ -157,6 +157,7 @@ while menuOp != "4":
                     RecentSus = sum([int(row[3]) for row in RecentCases[:-2]])
                     RecentNeg = sum([int(row[4]) for row in RecentCases[:-2]])
                     RecentConf = sum([int(row[5]) for row in RecentCases[:-2]])
+                    # Caso o denominador seja 0 a divisão não é feita e o programa alerta o usuario
                     if (RecentConf+RecentNeg+RecentSus) == 0:
                         print("Cheque os valores dos casos e tente novamente o denominador não pode ser 0")
                         menuOp = 0
@@ -167,6 +168,7 @@ while menuOp != "4":
                         menuOp = 0
                 elif PrintOp == "2":
                     TablePorcent = []
+                    # faz os calculos das porcentagens e imprime uma tabela 
                     for row in RecentCases[1:]:
                         pou = [row[1],f"{round(((int(row[3])/int(row[2]))*100), 2)}%",f"{round(((int(row[4])/int(row[2]))*100), 2)}%",f"{round(((int(row[5])/int(row[2]))*100), 2)}%"]
                         TablePorcent.append(pou)
@@ -200,6 +202,8 @@ while menuOp != "4":
                     habitantes = [row[2] for row in Lista if row[1] == bairro].pop()
                     InvalidLocale = False
                 else:
+                    # Caso o bairro não exista pode ser criado uma nova linha com bairro e habitantes novos
+                    # e checa se o numero de habitantes são validos
                     print(f"\nNão é possivel registrar o bairro {bairro} pois não consta no sistema.\n")
                     BairroOp = input("Deseja adcionar um bairro ao sistema?\n1- Sim\n2- Não")
                     if BairroOp == "1":
@@ -229,12 +233,14 @@ while menuOp != "4":
                     # habitantes do bairro e se a quantidade de casos negativos e confirmados não
                     # é maior que a quantidade de suspeitos anterior, caso não seja adiciona os casos a conta
                     if (suspeitos + negativos + confirmados) <= int(habitantes):
+                        # Caso o bairro exista pega o ultimo valor do bairro e soma com os valores digitados pelo usuario
                         if bairro in bairros:
                             LastSuspeitos = int([row[3] for row in Lista if row[1] == bairro].pop())
                             NewNegativos = int([row[4] for row in Lista if row[1] == bairro].pop()) + negativos
                             NewSuspeitos = (LastSuspeitos + suspeitos) - (negativos + confirmados)
                             NewConfirmados = int([row[5] for row in Lista if row[1] == bairro].pop()) + confirmados
                         else:
+                            # Caso o bairro seja novo, os valores digitados são apenas adicionados a o bairro correspondente
                             LastSuspeitos = NewSuspeitos = suspeitos
                             NewNegativos = negativos
                             NewConfirmados = confirmados
@@ -246,7 +252,8 @@ while menuOp != "4":
                     else:
                         print("O número de casos precisa ser menor que o número de habitantes!")                      
                 else:
-                    print("Digite valores válidos!")        
+                    print("Digite valores válidos!")     
+
                 # Adiciona as informações ao arquivo csv e a lista gerada no inicio do código
             
             write.writerow([NewDate, bairro, habitantes, NewSuspeitos, NewNegativos, NewConfirmados])
@@ -254,6 +261,7 @@ while menuOp != "4":
             datas.add(NewDate)
 
         case "4":
+            # finaliza programa
             print("\nFinalizando programa")
         case _:
             print("\nSelecione uma opção válida!\n")
